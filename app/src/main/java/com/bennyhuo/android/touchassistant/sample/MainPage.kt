@@ -25,6 +25,8 @@ class MainPage(pageContext: PageContext) : Page(pageContext) {
         view.apply {
             button.setOnClickListener {
                 Log.d("MainPage", "clicked, input value: ${input.text}")
+
+                showPage(DetailsPage::class)
             }
 
             switcher.setOnCheckedChangeListener { buttonView, isChecked ->

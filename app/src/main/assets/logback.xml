@@ -1,0 +1,14 @@
+<!--debug属性用来决定是否打印logback的日志信息-->
+<configuration debug='true'>
+    <!--用于在控制台输出的Appender-->
+    <appender name="Logcat" class="ch.qos.logback.classic.android.LogcatAppender">
+        <encoder>
+            <pattern>[%thread] (%file:%line\) %M: %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="TRACE">
+        <appender-ref ref="Logcat" />
+    </root>
+
+</configuration>

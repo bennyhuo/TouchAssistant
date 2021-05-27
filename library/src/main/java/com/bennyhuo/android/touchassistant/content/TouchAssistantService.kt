@@ -15,7 +15,9 @@ import android.util.DisplayMetrics
 import android.view.*
 import com.bennyhuo.android.touchassistant.R
 import com.bennyhuo.android.touchassistant.page.Page
+import com.bennyhuo.android.touchassistant.utils.canDrawOverlays
 import com.bennyhuo.android.touchassistant.utils.dip
+import com.bennyhuo.android.touchassistant.utils.requestDrawOverlays
 import kotlinx.android.synthetic.main.assistive_touch.view.*
 import java.lang.IllegalArgumentException
 import kotlin.math.abs
@@ -85,6 +87,11 @@ class TouchAssistantService : Service(), View.OnTouchListener {
     }
 
     fun showTouchAssistant() {
+        if(!canDrawOverlays()) {
+            requestDrawOverlays()
+            return
+        }
+
         //if (!TaskManager.isForeground()) return
         if (isShowing) return
         try {

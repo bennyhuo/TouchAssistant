@@ -8,19 +8,16 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ToggleButton
-            android:id="@+id/switcher"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
         <Button
             android:id="@+id/button"
-            android:text="goToDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-        <EditText
-            android:id="@+id/input"
+
+        <TextView
+            android:id="@+id/content"
+            android:text="Details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+
     </LinearLayout>
 </ScrollView>
