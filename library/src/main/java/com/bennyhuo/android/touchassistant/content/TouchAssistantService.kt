@@ -12,14 +12,16 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.DisplayMetrics
-import android.view.*
+import android.view.Gravity
+import android.view.MotionEvent
+import android.view.View
+import android.view.WindowManager
 import com.bennyhuo.android.touchassistant.R
 import com.bennyhuo.android.touchassistant.page.Page
 import com.bennyhuo.android.touchassistant.utils.canDrawOverlays
 import com.bennyhuo.android.touchassistant.utils.dip
 import com.bennyhuo.android.touchassistant.utils.requestDrawOverlays
-import kotlinx.android.synthetic.main.assistive_touch.view.*
-import java.lang.IllegalArgumentException
+import kotlinx.android.synthetic.main.assistant_touch.view.*
 import kotlin.math.abs
 
 class TouchAssistantService : Service(), View.OnTouchListener {
@@ -34,11 +36,11 @@ class TouchAssistantService : Service(), View.OnTouchListener {
         getSharedPreferences("com.bennyhuo.android.touchassistant", MODE_PRIVATE)
     }
 
-    private lateinit var popup: AssistantPopup
+    private lateinit var touchAssistantContent: TouchAssistantContent
 
     // 界面布局对象
     private val view by lazy {
-        View.inflate(this, R.layout.assistive_touch, null)
+        View.inflate(this, R.layout.assistant_touch, null)
     }
 
     private var isShowing = false
@@ -46,15 +48,15 @@ class TouchAssistantService : Service(), View.OnTouchListener {
     override fun onBind(intent: Intent): IBinder {
         val mainPageClass = intent.getSerializableExtra(EXTRA_ENTRY_PAGE) as? Class<Page>
             ?: throw IllegalArgumentException("MainPageClass cannot be null!")
-        popup = AssistantPopup(this, mainPageClass.kotlin)
-        popup.setOnPopupStateChangedListener(object : AssistantPopup.OnPopupStateChangedListener {
+        touchAssistantContent = TouchAssistantContent(this, mainPageClass.kotlin)
+        touchAssistantContent.setOnPopupStateChangedListener(object : TouchAssistantContent.OnContentStateChangedListener {
             override fun onShow() {
-                hideTouchAssistant()
+                dismiss()
             }
 
             override fun onDismiss() {
-                popup.dismiss()
-                showTouchAssistant()
+                touchAssistantContent.dismiss()
+                show()
             }
         })
         return AssistantBinder()
@@ -62,12 +64,12 @@ class TouchAssistantService : Service(), View.OnTouchListener {
 
     inner class AssistantBinder : Binder() {
 
-        fun showMiniMode() {
-            showTouchAssistant()
+        fun showTouchAssistant() {
+            show()
         }
 
-        fun hideMiniMode() {
-            hideTouchAssistant()
+        fun dismissTouchAssistant() {
+            dismiss()
         }
     }
 
@@ -86,7 +88,7 @@ class TouchAssistantService : Service(), View.OnTouchListener {
         animateToEdge()
     }
 
-    fun showTouchAssistant() {
+    fun show() {
         if(!canDrawOverlays()) {
             requestDrawOverlays()
             return
@@ -137,7 +139,7 @@ class TouchAssistantService : Service(), View.OnTouchListener {
     /**
      * 关闭自定义Toast
      */
-    fun hideTouchAssistant() {
+    fun dismiss() {
         if (!isShowing) return
         try {
             cancelAnimator()
@@ -233,8 +235,8 @@ class TouchAssistantService : Service(), View.OnTouchListener {
     private fun onClick() {
         val layoutParams: WindowManager.LayoutParams =
             view.layoutParams as WindowManager.LayoutParams
-        popup.setAnchor(layoutParams.x + view.width / 2, layoutParams.y + view.height / 2)
-        popup.show()
+        touchAssistantContent.setAnchor(layoutParams.x + view.width / 2, layoutParams.y + view.height / 2)
+        touchAssistantContent.show()
     }
 
     private fun cancelAnimator() {

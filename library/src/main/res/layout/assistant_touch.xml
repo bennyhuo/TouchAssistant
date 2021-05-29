@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -11,7 +10,7 @@
         android:padding="5dp"
         android:background="@drawable/round_rect_black"
         android:gravity="center"
-        android:src="@drawable/assistive_touch_sel"
+        android:src="@drawable/touch_assistant_sel"
         android:textColor="#FFFFFFFF" />
 
 </RelativeLayout>

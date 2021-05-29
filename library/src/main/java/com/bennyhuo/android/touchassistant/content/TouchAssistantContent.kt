@@ -20,7 +20,7 @@ import kotlin.reflect.KClass
 /**
  * Created by benny on 5/17/17.
  */
-class AssistantPopup(private val context: Context, private val mainPageClass: KClass<Page>) :
+class TouchAssistantContent(private val context: Context, private val mainPageClass: KClass<Page>) :
     PageManager {
 
     private var isAdded = false
@@ -47,7 +47,7 @@ class AssistantPopup(private val context: Context, private val mainPageClass: KC
 
     //region pages
 
-    val currentPage: Page
+    private val currentPage: Page
         get() = pages.lastElement()
 
     private fun initPage() {
@@ -144,7 +144,7 @@ class AssistantPopup(private val context: Context, private val mainPageClass: KC
             contentView.clearFocus()
             playShowAnimation()
             isAdded = true
-            onPopupStateChangedListener?.onShow()
+            onContentStateChangedListener?.onShow()
             currentPage.onEnter()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -195,7 +195,7 @@ class AssistantPopup(private val context: Context, private val mainPageClass: KC
                 animatorSet.duration = DURATION.toLong()
                 animatorSet.start()
 
-                this@AssistantPopup.animatorSet = animatorSet
+                this@TouchAssistantContent.animatorSet = animatorSet
 
                 container.removeOnLayoutChangeListener(this)
             }
@@ -243,35 +243,33 @@ class AssistantPopup(private val context: Context, private val mainPageClass: KC
                 super.onAnimationEnd(animation)
                 windowManager.removeView(contentView)
                 animation.removeAllListeners()
-                onPopupStateChangedListener?.onDismiss()
+                onContentStateChangedListener?.onDismiss()
             }
         })
         animatorSet.start()
-        this@AssistantPopup.animatorSet = animatorSet
+        this@TouchAssistantContent.animatorSet = animatorSet
     }
 
     private fun cancelAnimator() {
-        if (animatorSet != null) {
-            animatorSet!!.cancel()
-            animatorSet = null
-        }
+        animatorSet?.cancel()
+        animatorSet = null
     }
     //endregion
 
-    interface OnPopupStateChangedListener {
+    interface OnContentStateChangedListener {
         fun onShow()
 
         fun onDismiss()
     }
 
-    private var onPopupStateChangedListener: OnPopupStateChangedListener? = null
+    private var onContentStateChangedListener: OnContentStateChangedListener? = null
 
-    fun setOnPopupStateChangedListener(onPopupStateChangedListener: OnPopupStateChangedListener) {
-        this.onPopupStateChangedListener = onPopupStateChangedListener
+    fun setOnPopupStateChangedListener(onContentStateChangedListener: OnContentStateChangedListener) {
+        this.onContentStateChangedListener = onContentStateChangedListener
     }
 
     companion object {
-        private val DURATION = 200
+        private const val DURATION = 200
     }
 }
 
