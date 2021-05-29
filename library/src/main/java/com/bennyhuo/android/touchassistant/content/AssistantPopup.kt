@@ -205,14 +205,7 @@ class AssistantPopup(private val context: Context, private val mainPageClass: KC
     override fun dismiss() {
         try {
             if (!isAdded) return
-
-            while (pages.size > 1) {
-                pages.pop().let {
-                    it.onExit()
-                    it.onRelease()
-                }
-            }
-
+            currentPage.onExit()
             playDismissAnimation()
             isAdded = false
         } catch (e: Exception) {
