@@ -3,7 +3,7 @@ package com.bennyhuo.android.touchassistant.sample
 import android.app.Activity
 import android.app.Application
 import com.bennyhuo.android.activitystack.TaskManager
-import com.bennyhuo.android.touchassistant.TouchAssistantApi
+import com.bennyhuo.android.touchassistant.TouchAssistant
 
 class App: Application() {
 
@@ -12,14 +12,14 @@ class App: Application() {
         TaskManager.setup(this)
 
         TaskManager.addOnApplicationStateChangedListener(object: TaskManager.OnApplicationStateChangedListener{
-            val touchAssistantApi = TouchAssistantApi(this@App, MainPage::class.java)
+            val touchAssistant = TouchAssistant(this@App, MainPage::class.java)
 
             override fun onBackground() {
-                touchAssistantApi.dismiss()
+                touchAssistant.dismiss()
             }
 
             override fun onForeground() {
-                touchAssistantApi.show()
+                touchAssistant.show()
             }
 
             override fun onLowMemory() {

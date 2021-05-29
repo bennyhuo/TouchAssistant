@@ -16,11 +16,6 @@ class MainPage(pageContext: PageContext) : Page(pageContext) {
         LayoutInflater.from(context).inflate(R.layout.page_main, null)
     }
 
-
-    override fun onEnter() {
-        super.onEnter()
-    }
-
     init {
         view.apply {
             button.setOnClickListener {

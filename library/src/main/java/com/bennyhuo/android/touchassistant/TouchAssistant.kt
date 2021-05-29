@@ -12,7 +12,7 @@ import com.bennyhuo.android.touchassistant.page.Page
 /**
  * Created by benny on 04/06/2018.
  */
-class TouchAssistantApi(
+class TouchAssistant(
     context: Context,
     private val entryPageClass: Class<out Page>
 ) {
