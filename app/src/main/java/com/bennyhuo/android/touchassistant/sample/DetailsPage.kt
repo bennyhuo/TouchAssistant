@@ -1,16 +1,14 @@
 package com.bennyhuo.android.touchassistant.sample
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import com.bennyhuo.android.touchassistant.page.Page
-import com.bennyhuo.android.touchassistant.page.PageContext
 import kotlinx.android.synthetic.main.page_detail.view.*
 
 /**
  * Created by benny on 5/24/17.
  */
-class DetailsPage(pageContext: PageContext) : Page(pageContext) {
+class DetailsPage() : Page() {
 
     companion object {
         var count = 0

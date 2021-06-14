@@ -19,7 +19,11 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            touchAssistantApi.show()
+            if (touchAssistantApi.isShowing) {
+                touchAssistantApi.dismiss()
+            } else {
+                touchAssistantApi.show()
+            }
         }
     }
 

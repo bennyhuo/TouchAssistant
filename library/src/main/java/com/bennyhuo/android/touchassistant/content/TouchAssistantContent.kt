@@ -51,13 +51,14 @@ class TouchAssistantContent(private val context: Context, private val mainPageCl
         get() = pages.lastElement()
 
     private fun initPage() {
-        mainPageClass.create(pageContext).apply {
-            doShowPage(this)
+        mainPageClass.create().also {
+            it.performCreate(pageContext)
+            doShowPage(it)
         }.let(pages::push).onEnter()
     }
 
-    private fun KClass<out Page>.create(pageContext: PageContext) =
-        java.getDeclaredConstructor(PageContext::class.java).newInstance(pageContext)
+    private fun KClass<out Page>.create() =
+        java.getDeclaredConstructor().newInstance()
 
     override fun showPage(clazz: KClass<out Page>, clearTop: Boolean) {
         var existsPage: Page? = null
@@ -75,13 +76,14 @@ class TouchAssistantContent(private val context: Context, private val mainPageCl
             }
         }
 
-        val page = existsPage ?: clazz.create(pageContext)
+        val page = existsPage ?: clazz.create()
         showPage(page)
     }
 
     override fun showPage(page: Page) {
         if (currentPage == page) return
         currentPage.onExit()
+        page.performCreate(pageContext)
         doShowPage(page)
         pages.push(page)
     }

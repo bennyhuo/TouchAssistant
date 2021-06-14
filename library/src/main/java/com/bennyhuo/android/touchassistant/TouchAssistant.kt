@@ -14,15 +14,14 @@ import com.bennyhuo.android.touchassistant.page.Page
  */
 class TouchAssistant(
     context: Context,
-    private val entryPageClass: Class<out Page>
+    entryPageClass: Class<out Page>
 ) {
     private var binder: AssistantBinder? = null
     private val context = context.applicationContext
 
-    val isShowing: Boolean
-        get() = binder != null
+    private val doOnBind = mutableListOf<() -> Unit>()
 
-    fun show() {
+    init {
         val intent = Intent(context, TouchAssistantService::class.java)
         intent.putExtra(TouchAssistantService.EXTRA_ENTRY_PAGE, entryPageClass)
 
@@ -30,7 +29,9 @@ class TouchAssistant(
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
                 if (service is AssistantBinder) {
                     binder = service
-                    service.showTouchAssistant()
+                    // do delayed work.
+                    doOnBind.forEach { it.invoke() }
+                    doOnBind.clear()
                 }
             }
 
@@ -40,10 +41,21 @@ class TouchAssistant(
         }, Context.BIND_AUTO_CREATE)
     }
 
+    val isShowing: Boolean
+        get() = binder?.isTouchAssistantShowing() ?: false
+
+    fun show() {
+        binder?.showTouchAssistant() ?: doOnBind.add {
+            binder?.showTouchAssistant()
+        }
+    }
+
     fun dismiss() {
         binder?.dismissTouchAssistant()
-        binder = null
+    }
 
+    fun release() {
+        binder = null
         context.stopService(Intent(context, TouchAssistantService::class.java))
     }
 }

@@ -45,21 +45,25 @@ class TouchAssistantService : Service(), View.OnTouchListener {
 
     private var isShowing = false
 
-    override fun onBind(intent: Intent): IBinder {
-        val mainPageClass = intent.getSerializableExtra(EXTRA_ENTRY_PAGE) as? Class<Page>
-            ?: throw IllegalArgumentException("MainPageClass cannot be null!")
-        touchAssistantContent = TouchAssistantContent(this, mainPageClass.kotlin)
-        touchAssistantContent.setOnPopupStateChangedListener(object : TouchAssistantContent.OnContentStateChangedListener {
-            override fun onShow() {
-                dismiss()
-            }
+    private val assistantBinder = AssistantBinder()
 
-            override fun onDismiss() {
-                touchAssistantContent.dismiss()
-                show()
-            }
-        })
-        return AssistantBinder()
+    override fun onBind(intent: Intent): IBinder {
+        if (!::touchAssistantContent.isInitialized) {
+            val mainPageClass = intent.getSerializableExtra(EXTRA_ENTRY_PAGE) as? Class<Page>
+                ?: throw IllegalArgumentException("MainPageClass cannot be null!")
+            touchAssistantContent = TouchAssistantContent(this, mainPageClass.kotlin)
+            touchAssistantContent.setOnPopupStateChangedListener(object : TouchAssistantContent.OnContentStateChangedListener {
+                override fun onShow() {
+                    dismiss()
+                }
+
+                override fun onDismiss() {
+                    touchAssistantContent.dismiss()
+                    show()
+                }
+            })
+        }
+        return assistantBinder
     }
 
     inner class AssistantBinder : Binder() {
@@ -71,12 +75,22 @@ class TouchAssistantService : Service(), View.OnTouchListener {
         fun dismissTouchAssistant() {
             dismiss()
         }
+
+        fun isTouchAssistantShowing(): Boolean {
+            return isShowing
+        }
+
     }
 
     override fun onCreate() {
         super.onCreate()
         touchOffset = dip(touchOffset)
         view.setOnTouchListener(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        dismiss()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -136,9 +150,6 @@ class TouchAssistantService : Service(), View.OnTouchListener {
         view.context.applicationContext.startActivity(intent)
     }
 
-    /**
-     * 关闭自定义Toast
-     */
     fun dismiss() {
         if (!isShowing) return
         try {
@@ -150,7 +161,6 @@ class TouchAssistantService : Service(), View.OnTouchListener {
         }
     }
 
-    // 手指按下屏幕的坐标
     private var rawX = 0f
     private var rawY = 0f
     private var startX = 0f
