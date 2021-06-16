@@ -9,20 +9,16 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
-    val touchAssistantApi by lazy {
-        TouchAssistant(this, MainPage::class.java)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            if (touchAssistantApi.isShowing) {
-                touchAssistantApi.dismiss()
+            if (TouchAssistant.isShowing) {
+                TouchAssistant.dismiss()
             } else {
-                touchAssistantApi.show()
+                TouchAssistant.show()
             }
         }
     }

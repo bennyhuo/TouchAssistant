@@ -56,4 +56,11 @@ abstract class Page : ContextWrapper(null), PageManager{
     override fun dismiss() {
         pageContext.pageManager.dismiss()
     }
+
+    fun View.setDismissOnClickListener(onClickListener: View.OnClickListener) {
+        setOnClickListener {
+            onClickListener.onClick(it)
+            dismiss()
+        }
+    }
 }

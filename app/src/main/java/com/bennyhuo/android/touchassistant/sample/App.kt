@@ -10,16 +10,16 @@ class App: Application() {
     override fun onCreate() {
         super.onCreate()
         TaskManager.setup(this)
+        TouchAssistant.init(this@App, MainPage::class.java)
 
         TaskManager.addOnApplicationStateChangedListener(object: TaskManager.OnApplicationStateChangedListener{
-            val touchAssistant = TouchAssistant(this@App, MainPage::class.java)
 
             override fun onBackground() {
-                touchAssistant.dismiss()
+                TouchAssistant.dismiss()
             }
 
             override fun onForeground() {
-                touchAssistant.show()
+                TouchAssistant.show()
             }
 
             override fun onLowMemory() {
