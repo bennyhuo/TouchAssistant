@@ -44,6 +44,7 @@ class TouchAssistantService : Service(), View.OnTouchListener {
     }
 
     private var isShowing = false
+    private var isTouchControllerShowing = false
 
     private val assistantBinder = AssistantBinder()
 
@@ -54,12 +55,13 @@ class TouchAssistantService : Service(), View.OnTouchListener {
             touchAssistantContent = TouchAssistantContent(this, mainPageClass.kotlin)
             touchAssistantContent.setOnPopupStateChangedListener(object : TouchAssistantContent.OnContentStateChangedListener {
                 override fun onShow() {
-                    dismiss()
+                    dismissTouchContoller()
                 }
 
                 override fun onDismiss() {
-                    touchAssistantContent.dismiss()
-                    show()
+                    if(isShowing) {
+                        showTouchController()
+                    }
                 }
             })
         }
@@ -102,14 +104,14 @@ class TouchAssistantService : Service(), View.OnTouchListener {
         animateToEdge()
     }
 
-    fun show() {
+    fun showTouchController() {
+        if(isTouchControllerShowing) return
+
         if(!canDrawOverlays()) {
             requestDrawOverlays()
             return
         }
 
-        //if (!TaskManager.isForeground()) return
-        if (isShowing) return
         try {
             val outMetrics = DisplayMetrics()
             windowManager.defaultDisplay.getMetrics(outMetrics)
@@ -130,7 +132,7 @@ class TouchAssistantService : Service(), View.OnTouchListener {
             }
 
             windowManager.addView(view, params)
-            isShowing = true
+            isTouchControllerShowing = true
             animateToEdge()
         } catch (e: SecurityException) {
             e.printStackTrace()
@@ -143,22 +145,35 @@ class TouchAssistantService : Service(), View.OnTouchListener {
         }
     }
 
+    fun show() {
+        if (isShowing) return
+        showTouchController()
+        isShowing = true
+    }
+
+    fun dismiss() {
+        if (!isShowing) return
+        dismissTouchContoller()
+        touchAssistantContent.dismiss()
+        isShowing = false
+    }
+
+    private fun dismissTouchContoller() {
+        if (!isTouchControllerShowing) return
+        try {
+            cancelAnimator()
+            windowManager.removeView(view)
+            isTouchControllerShowing = false
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private fun showApplicationSettings() {
         val intent = Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION")
         intent.data = Uri.parse("package:$packageName")
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         view.context.applicationContext.startActivity(intent)
-    }
-
-    fun dismiss() {
-        if (!isShowing) return
-        try {
-            cancelAnimator()
-            windowManager.removeView(view)
-            isShowing = false
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
 
     private var rawX = 0f
@@ -279,7 +294,7 @@ class TouchAssistantService : Service(), View.OnTouchListener {
     }
 
     private fun animateToEdge() {
-        if (!isShowing) return
+        if (!isTouchControllerShowing) return
         val params: WindowManager.LayoutParams = view.layoutParams as WindowManager.LayoutParams
         var left: Int = params.x
         var top: Int = params.y
