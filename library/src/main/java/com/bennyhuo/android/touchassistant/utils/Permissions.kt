@@ -27,7 +27,11 @@ fun Context.canDrawOverlays(): Boolean {
  */
 fun Context.requestDrawOverlays() {
     val intent = Intent(
-        "android.settings.action.MANAGE_OVERLAY_PERMISSION",
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            "android.settings.action.MANAGE_OVERLAY_PERMISSION"
+        } else {
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+        },
         Uri.parse("package:$packageName")
     )
     if (this !is Activity) {

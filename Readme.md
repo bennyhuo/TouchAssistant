@@ -11,7 +11,7 @@ A simple Touch Assistant implementation like the one in iOS which can be used as
 I have deployed these modules to maven central, you may add this in your build.gradle:
 
 ```
-implementation("com.bennyhuo:touch-assistant:1.0")
+implementation("com.bennyhuo:touch-assistant:1.2")
 ```
 
 ### SNAPSHOT
@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.bennyhuo:touch-assistant:1.1-SNAPSHOT")
+    implementation("com.bennyhuo:touch-assistant:1.3-SNAPSHOT")
 }
 ```
 
